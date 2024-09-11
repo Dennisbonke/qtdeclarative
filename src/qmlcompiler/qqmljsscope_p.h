@@ -372,41 +372,49 @@ public:
      *
      * Returns true for objects defined from Qml, and false for objects declared from C++.
      */
-    bool isComposite() const { return m_flags & Composite; }
-    bool isScript() const { return m_flags & Script; }
-    bool hasCustomParser() const { return m_flags & CustomParser; }
-    bool isArrayScope() const { return m_flags & Array; }
-    bool isInlineComponent() const { return m_flags & InlineComponent; }
-    bool isWrappedInImplicitComponent() const { return m_flags & WrappedInImplicitComponent; }
-    bool extensionIsJavaScript() const { return m_flags & ExtensionIsJavaScript; }
-    bool extensionIsNamespace() const { return m_flags & ExtensionIsNamespace; }
+    bool isComposite() const { return m_flags.testFlag(Composite); }
+    void setIsComposite(bool v) { m_flags.setFlag(Composite, v); }
+
+    bool isScript() const { return m_flags.testFlag(Script); }
+    void setIsScript(bool v) { m_flags.setFlag(Script, v); }
+
+    bool hasCustomParser() const { return m_flags.testFlag(CustomParser); }
+    void setHasCustomParser(bool v) { m_flags.setFlag(CustomParser, v); }
+
+    bool isArrayScope() const { return m_flags.testFlag(Array); }
+    void setIsArrayScope(bool v) { m_flags.setFlag(Array, v); }
+
+    bool isInlineComponent() const { return m_flags.testFlag(InlineComponent); }
+    void setIsInlineComponent(bool v) { m_flags.setFlag(InlineComponent, v); }
+
+    bool isWrappedInImplicitComponent() const { return m_flags.testFlag(WrappedInImplicitComponent); }
+    void setIsWrappedInImplicitComponent(bool v) { m_flags.setFlag(WrappedInImplicitComponent, v); }
+
+    bool extensionIsJavaScript() const { return m_flags.testFlag(ExtensionIsJavaScript); }
+    void setExtensionIsJavaScript(bool v) { m_flags.setFlag(ExtensionIsJavaScript, v); }
+
+    bool extensionIsNamespace() const { return m_flags.testFlag(ExtensionIsNamespace); }
+    void setExtensionIsNamespace(bool v) { m_flags.setFlag(ExtensionIsNamespace, v); }
+
     bool isListProperty() const { return m_flags.testFlag(IsListProperty); }
     void setIsListProperty(bool v) { m_flags.setFlag(IsListProperty, v); }
-    bool isSingleton() const { return m_flags & Singleton; }
+
+    bool isSingleton() const { return m_flags.testFlag(Singleton); }
+    void setIsSingleton(bool v) { m_flags.setFlag(Singleton, v); }
 
     bool enforcesScopedEnums() const;
     void setEnforcesScopedEnumsFlag(bool v) { m_flags.setFlag(EnforcesScopedEnums, v); }
 
     bool isCreatable() const;
-    bool isStructured() const;
-    bool isReferenceType() const { return m_semantics == QQmlJSScope::AccessSemantics::Reference; }
-    bool isValueType() const { return m_semantics == QQmlJSScope::AccessSemantics::Value; }
-
-    void setIsSingleton(bool v) { m_flags.setFlag(Singleton, v); }
     void setCreatableFlag(bool v) { m_flags.setFlag(Creatable, v); }
-    void setStructuredFlag(bool v) { m_flags.setFlag(Structured, v); }
-    void setIsComposite(bool v) { m_flags.setFlag(Composite, v); }
-    void setIsScript(bool v) { m_flags.setFlag(Script, v); }
-    void setHasCustomParser(bool v);
-    void setIsArrayScope(bool v) { m_flags.setFlag(Array, v); }
-    void setIsInlineComponent(bool v) { m_flags.setFlag(InlineComponent, v); }
-    void setIsWrappedInImplicitComponent(bool v) { m_flags.setFlag(WrappedInImplicitComponent, v); }
-    void setExtensionIsJavaScript(bool v) { m_flags.setFlag(ExtensionIsJavaScript, v); }
-    void setExtensionIsNamespace(bool v) { m_flags.setFlag(ExtensionIsNamespace, v); }
 
+    bool isStructured() const;
+    void setStructuredFlag(bool v) { m_flags.setFlag(Structured, v); }
 
     void setAccessSemantics(AccessSemantics semantics) { m_semantics = semantics; }
     AccessSemantics accessSemantics() const { return m_semantics; }
+    bool isReferenceType() const { return m_semantics == QQmlJSScope::AccessSemantics::Reference; }
+    bool isValueType() const { return m_semantics == QQmlJSScope::AccessSemantics::Value; }
 
     std::optional<JavaScriptIdentifier> jsIdentifier(const QString &id) const;
     std::optional<JavaScriptIdentifier> ownJSIdentifier(const QString &id) const;
@@ -604,11 +612,6 @@ inline QQmlJSMetaMethod::AbsoluteFunctionIndex QQmlJSScope::ownRuntimeFunctionIn
     Q_ASSERT(i >= 0);
     Q_ASSERT(i < int(m_runtimeFunctionIndices.size()));
     return m_runtimeFunctionIndices[i];
-}
-
-inline void QQmlJSScope::setHasCustomParser(bool v)
-{
-    m_flags.setFlag(CustomParser, v);;
 }
 
 inline void QQmlJSScope::setInlineComponentName(const QString &inlineComponentName)
