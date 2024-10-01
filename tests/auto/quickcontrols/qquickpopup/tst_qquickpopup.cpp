@@ -114,6 +114,7 @@ private slots:
     void fadeDimmer_data();
     void fadeDimmer();
     void noDimmer();
+    void pointerEventsNotBlockedForNonPopupChildrenOfOverlayWithHigherZ();
 
     void popupWindowPositioning();
     void popupWindowAnchorsCenterIn_data();
@@ -1333,7 +1334,7 @@ void tst_QQuickPopup::modelessOnModalOnModeless()
     QQuickPopup *modalPopup = window->property("modalPopup").value<QQuickPopup *>();
     QVERIFY(modalPopup);
     QQuickPopup *tooltip = window->property("tooltip").value<QQuickPopup *>();
-    QVERIFY(modalPopup);
+    QVERIFY(tooltip);
 
     modelessPopup->open();
     QCOMPARE(modelessPopup->isVisible(), true);
@@ -2440,6 +2441,52 @@ void tst_QQuickPopup::noDimmer()
     QVERIFY(dimmer);
     // this must not crash
     QTRY_VERIFY(!drawer->isModal());
+}
+
+// The test verifies that press and release events for items that are ancestors of the overlay,
+// but not a popup item, are not filtered by modal popups.
+void tst_QQuickPopup::pointerEventsNotBlockedForNonPopupChildrenOfOverlayWithHigherZ()
+{
+    QQuickApplicationHelper helper(this, "parentToOverlay.qml");
+    QVERIFY2(helper.ready, helper.failureMessage());
+
+    QQuickWindow *window = helper.window;
+    window->show();
+    QVERIFY(QTest::qWaitForWindowExposed(window));
+
+    auto *popup = window->contentItem()->findChild<QQuickPopup *>();
+    QVERIFY(popup);
+    QQuickMouseArea *lowerMouseArea = window->property("lowerMouseArea").value<QQuickMouseArea *>();
+    QVERIFY(lowerMouseArea);
+    QQuickMouseArea *upperMouseArea = window->property("upperMouseArea").value<QQuickMouseArea *>();
+    QVERIFY(upperMouseArea);
+    QQuickAbstractButton *button = window->property("button").value<QQuickAbstractButton *>();
+    QVERIFY(button);
+
+    QSignalSpy lowerMouseAreaSpy(lowerMouseArea, &QQuickMouseArea::clicked);
+    QSignalSpy upperMouseAreaSpy(upperMouseArea, &QQuickMouseArea::clicked);
+    QSignalSpy buttonSpy(button, &QQuickAbstractButton::clicked);
+
+    popup->open();
+    QTRY_VERIFY(popup->isOpened());
+
+    QTest::mouseClick(window, Qt::LeftButton, Qt::NoModifier, button->mapToScene(button->boundingRect().center()).toPoint());
+
+    // The event should have been consumed by the upperMouseArea,
+    // since it's in the same hierarchy as the popup item, with a higher z.
+    QTRY_COMPARE(upperMouseAreaSpy.count(), 1);
+    QCOMPARE(lowerMouseAreaSpy.count(), 0);
+    QCOMPARE(buttonSpy.count(), 0);
+
+    upperMouseArea->setEnabled(false);
+
+    QVERIFY(clickButton(button));
+    // Since the upperMouseArea is disabled, the event should be sent to the button inside the popup.
+    QCOMPARE(buttonSpy.count(), 1);
+    QCOMPARE(lowerMouseAreaSpy.count(), 0);
+    QCOMPARE(upperMouseAreaSpy.count(), 1);
+
+    popup->close();
 }
 
 #define VERIFY_LOCAL_POS(POPUP, EXPECTED)                                                                     \
