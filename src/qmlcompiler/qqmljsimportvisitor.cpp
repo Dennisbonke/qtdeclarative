@@ -177,7 +177,7 @@ void QQmlJSImportVisitor::populateCurrentScope(
     m_currentScope->setScopeType(type);
     setScopeName(m_currentScope, type, name);
     m_currentScope->setIsComposite(true);
-    m_currentScope->setFilePath(QFileInfo(m_logger->fileName()).absoluteFilePath());
+    m_currentScope->setFilePath(QFileInfo(m_logger->filePath()).absoluteFilePath());
     m_currentScope->setSourceLocation(location);
     m_scopesByIrLocation.insert({ location.startLine, location.startColumn }, m_currentScope);
 }
@@ -416,7 +416,7 @@ void QQmlJSImportVisitor::importBaseModules()
 
     // Pulling in the modules and neighboring qml files of the qmltypes we're trying to lint is not
     // something we need to do.
-    if (!m_logger->fileName().endsWith(u".qmltypes"_s)) {
+    if (!m_logger->filePath().endsWith(u".qmltypes"_s)) {
         m_rootScopeImports.add(m_importer->importDirectory(m_implicitImportDirectory));
 
         // Import all possible resource directories the file may belong to.
@@ -424,7 +424,7 @@ void QQmlJSImportVisitor::importBaseModules()
         // locations, you're on your own anyway.
         if (QQmlJSResourceFileMapper *mapper = m_importer->resourceFileMapper()) {
             const QStringList resourcePaths = mapper->resourcePaths(QQmlJSResourceFileMapper::Filter {
-                    m_logger->fileName(), QStringList(), QQmlJSResourceFileMapper::Resource });
+                    m_logger->filePath(), QStringList(), QQmlJSResourceFileMapper::Resource });
             for (const QString &path : resourcePaths) {
                 const qsizetype lastSlash = path.lastIndexOf(QLatin1Char('/'));
                 if (lastSlash == -1)

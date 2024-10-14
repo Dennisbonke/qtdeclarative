@@ -3104,7 +3104,7 @@ QQmlDomAstCreatorWithQQmlJSScope::QQmlDomAstCreatorWithQQmlJSScope(const QQmlJSS
       m_logger(logger),
       m_importer(importer),
       m_implicitImportDirectory(QQmlJSImportVisitor::implicitImportDirectory(
-              m_logger->fileName(), m_importer->resourceFileMapper())),
+              m_logger->filePath(), m_importer->resourceFileMapper())),
       m_scopeCreator(m_root, m_importer, m_logger, m_implicitImportDirectory,
                      qmldirFilesFrom(qmlFile)),
       m_domCreator(qmlFile)

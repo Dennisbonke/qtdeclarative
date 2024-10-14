@@ -3569,7 +3569,7 @@ private slots:
         QVERIFY(typeResolver);
         auto logger = typeResolver->logger();
         // make sure that the logger is not use-after-free by checking its content
-        QCOMPARE(logger->fileName(), testFile);
+        QCOMPARE(logger->filePath(), testFile);
     }
 
     void commentLocations()

@@ -67,7 +67,7 @@ class tst_qqmljsscope : public QQmlDataTest
 
 
         QQmlJSLogger logger;
-        logger.setFileName(url);
+        logger.setFilePath(url);
         logger.setCode(sourceCode);
         logger.setSilent(expectErrorsOrWarnings);
         QQmlJSScope::Ptr target = QQmlJSScope::create();
@@ -882,14 +882,14 @@ void tst_qqmljsscope::attachedTypeResolution()
         QSKIP("Unable to open qml file");
 
     logger->setCode(qmlFile.readAll());
-    logger->setFileName(QString(qmlFile.filesystemFileName().string().c_str()));
+    logger->setFilePath(QString(qmlFile.filesystemFileName().string().c_str()));
     QQmlJSImporter importer{ { "data" }, nullptr, UseOptionalImports };
     QStringList defaultImportPaths =
             QStringList{ QLibraryInfo::path(QLibraryInfo::QmlImportsPath) };
     importer.setImportPaths(defaultImportPaths);
     QQmlJSTypeResolver resolver(&importer);
     const auto &implicitImportDirectory = QQmlJSImportVisitor::implicitImportDirectory(
-            logger->fileName(), importer.resourceFileMapper());
+            logger->filePath(), importer.resourceFileMapper());
     QQmlJSImportVisitor v{
         QQmlJSScope::create(), &importer, logger.get(), implicitImportDirectory, {}
     };
@@ -995,7 +995,7 @@ void tst_qqmljsscope::modulePrefixes()
     const auto url = testFile("modulePrefixes.qml");
     const QString sourceCode = loadUrl(url);
     QQmlJSLogger logger;
-    logger.setFileName(url);
+    logger.setFilePath(url);
     logger.setCode(sourceCode);
 
     QQmlJSScope::Ptr target = QQmlJSScope::create();
@@ -1022,7 +1022,7 @@ void tst_qqmljsscope::javaScriptBuiltinFlag()
 {
     const auto url = testFile("ComponentType.qml");
     QQmlJSLogger logger;
-    logger.setFileName(url);
+    logger.setFilePath(url);
     logger.setCode(loadUrl(url));
 
     QQmlJSScope::Ptr target = QQmlJSScope::create();

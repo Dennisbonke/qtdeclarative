@@ -250,9 +250,9 @@ void QQmlJSLogger::log(const QString &message, QQmlJS::LoggerWarningId id,
 
     QString prefix;
 
-    if ((!overrideFileName.isEmpty() || !m_fileName.isEmpty()) && showFileName)
+    if ((!overrideFileName.isEmpty() || !m_filePath.isEmpty()) && showFileName)
         prefix =
-                (!overrideFileName.isEmpty() ? overrideFileName : m_fileName) + QStringLiteral(":");
+                (!overrideFileName.isEmpty() ? overrideFileName : m_filePath) + QStringLiteral(":");
 
     if (srcLocation.isValid())
         prefix += QStringLiteral("%1:%2:").arg(srcLocation.startLine).arg(srcLocation.startColumn);
@@ -310,7 +310,7 @@ void QQmlJSLogger::printContext(const QString &overrideFileName,
 {
     QString code = m_code;
 
-    if (!overrideFileName.isEmpty() && overrideFileName != QFileInfo(m_fileName).absolutePath()) {
+    if (!overrideFileName.isEmpty() && overrideFileName != QFileInfo(m_filePath).absolutePath()) {
         QFile file(overrideFileName);
         const bool success = file.open(QFile::ReadOnly);
         Q_ASSERT(success);
@@ -341,7 +341,7 @@ void QQmlJSLogger::printContext(const QString &overrideFileName,
 
 void QQmlJSLogger::printFix(const QQmlJSFixSuggestion &fixItem)
 {
-    const QString currentFileAbsPath = QFileInfo(m_fileName).absolutePath();
+    const QString currentFileAbsPath = QFileInfo(m_filePath).absolutePath();
     QString code = m_code;
     QString currentFile;
     m_output.writePrefixedMessage(fixItem.fixDescription(), QtInfoMsg);
