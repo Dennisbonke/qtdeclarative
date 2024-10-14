@@ -18,7 +18,6 @@ QT_WARNING_POP
 
 #include <QtCore/qglobal.h>
 #include <QtCore/qfile.h>
-#include <QtCore/qfileinfo.h>
 
 
 QT_BEGIN_NAMESPACE
@@ -310,7 +309,7 @@ void QQmlJSLogger::printContext(const QString &overrideFileName,
 {
     QString code = m_code;
 
-    if (!overrideFileName.isEmpty() && overrideFileName != QFileInfo(m_filePath).absolutePath()) {
+    if (!overrideFileName.isEmpty() && overrideFileName != m_filePath) {
         QFile file(overrideFileName);
         const bool success = file.open(QFile::ReadOnly);
         Q_ASSERT(success);
@@ -341,7 +340,7 @@ void QQmlJSLogger::printContext(const QString &overrideFileName,
 
 void QQmlJSLogger::printFix(const QQmlJSFixSuggestion &fixItem)
 {
-    const QString currentFileAbsPath = QFileInfo(m_filePath).absolutePath();
+    const QString currentFileAbsPath = m_filePath;
     QString code = m_code;
     QString currentFile;
     m_output.writePrefixedMessage(fixItem.fixDescription(), QtInfoMsg);

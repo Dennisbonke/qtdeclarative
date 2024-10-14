@@ -6,7 +6,6 @@
 #include "qqmljsmetatypes_p.h"
 #include "qqmljsresourcefilemapper_p.h"
 
-#include <QtCore/qfileinfo.h>
 #include <QtCore/qdir.h>
 #include <QtCore/qqueue.h>
 #include <QtCore/qscopedvaluerollback.h>
@@ -177,7 +176,7 @@ void QQmlJSImportVisitor::populateCurrentScope(
     m_currentScope->setScopeType(type);
     setScopeName(m_currentScope, type, name);
     m_currentScope->setIsComposite(true);
-    m_currentScope->setFilePath(QFileInfo(m_logger->filePath()).absoluteFilePath());
+    m_currentScope->setFilePath(m_logger->filePath());
     m_currentScope->setSourceLocation(location);
     m_scopesByIrLocation.insert({ location.startLine, location.startColumn }, m_currentScope);
 }
@@ -2833,6 +2832,7 @@ bool QQmlJSImportVisitor::visit(Program *)
 {
     Q_ASSERT(m_globalScope == m_currentScope);
     Q_ASSERT(!rootScopeIsValid());
+    m_currentScope->setFilePath(m_logger->filePath());
     *m_exportedRootScope = std::move(*QQmlJSScope::clone(m_currentScope));
     m_exportedRootScope->setIsScript(true);
     m_currentScope = m_exportedRootScope;

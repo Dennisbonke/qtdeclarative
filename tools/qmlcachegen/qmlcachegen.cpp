@@ -258,6 +258,7 @@ int main(int argc, char **argv)
             QQmlJSImporter importer(
                         importPaths, parser.isSet(resourceOption) ? &fileMapper : nullptr);
             QQmlJSLogger logger;
+            logger.setFilePath(inputFile);
 
             // Always trigger the qFatal() on "pragma Strict" violations.
             logger.setCategoryLevel(qmlCompiler, QtWarningMsg);
