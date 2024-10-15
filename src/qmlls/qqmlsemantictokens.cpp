@@ -340,7 +340,7 @@ void HighlightingVisitor::highlightBinding(const DomItem &item)
         return;
     }
 
-    return highlightBySemanticAnalysis(item, regions[IdentifierRegion]);
+    return m_highlights.addHighlight(regions[IdentifierRegion], QmlHighlightKind::QmlProperty);
 }
 
 void HighlightingVisitor::highlightPragma(const DomItem &item)
