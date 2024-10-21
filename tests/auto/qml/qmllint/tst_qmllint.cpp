@@ -1441,6 +1441,7 @@ void TestQmllint::cleanQmlCode_data()
     QTest::newRow("overlay") << QStringLiteral("overlayFromControls.qml");
 #endif
     QTest::newRow("thisObject") << QStringLiteral("thisObject.qml");
+    QTest::newRow("aliasGroup") << QStringLiteral("aliasGroup.qml");
 }
 
 void TestQmllint::cleanQmlCode()
