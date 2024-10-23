@@ -280,6 +280,7 @@ int main(int argc, char **argv)
             if (parser.isSet(dumpAotStatsOption)) {
                 QQmlJS::QQmlJSAotCompilerStats::setRecordAotStats(true);
                 QQmlJS::QQmlJSAotCompilerStats::setModuleId(parser.value(moduleIdOption));
+                QQmlJS::QQmlJSAotCompilerStats::registerFile(inputFile);
             }
 
             if (parser.isSet(validateBasicBlocksOption))
