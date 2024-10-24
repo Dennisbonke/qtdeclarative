@@ -3140,12 +3140,12 @@ function(qt6_target_qml_sources target)
     if(NOT "${uri}" STREQUAL "")
         list(JOIN aotstats_files "\n" aotstats_files_lines)
         set(module_aotstats_list_file
-            "${CMAKE_CURRENT_BINARY_DIR}/.rcc/qmlcache/module_${uri}.aotstatslist")
+            "${CMAKE_CURRENT_BINARY_DIR}/.rcc/qmlcache/module_${target}.aotstatslist")
         file(WRITE ${module_aotstats_list_file} ${aotstats_files_lines})
 
         # Aggregate qml file aotstats into module-level aotstats
         _qt_internal_get_tool_wrapper_script_path(tool_wrapper)
-        set(output "${CMAKE_CURRENT_BINARY_DIR}/.rcc/qmlcache/module_${uri}.aotstats")
+        set(output "${CMAKE_CURRENT_BINARY_DIR}/.rcc/qmlcache/module_${target}.aotstats")
         add_custom_command(
             OUTPUT ${output}
             DEPENDS ${aotstats_files}
