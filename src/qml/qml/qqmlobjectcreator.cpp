@@ -671,7 +671,8 @@ void QQmlObjectCreator::setPropertyValue(const QQmlPropertyData *property, const
                 break;
             }
 
-            QVariant target = QQmlValueTypeProvider::createValueType(source, propertyType);
+            QVariant target = QQmlValueTypeProvider::createValueType(
+                    source, propertyType, engine->handle());
             if (target.isValid()) {
                 property->writeProperty(_qobject, target.data(), propertyWriteFlags);
                 break;

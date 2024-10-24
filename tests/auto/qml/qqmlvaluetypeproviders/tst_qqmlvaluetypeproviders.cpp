@@ -586,7 +586,6 @@ void tst_qqmlvaluetypeproviders::constructFromJSValue()
     FromJSPrimitive::constructorCalls = 0;
 
     QScopedPointer<QObject> o(component.create());
-    QEXPECT_FAIL("", "Until we can handle QJSValue the ctor should not be called", Abort);
     QVERIFY(!o.isNull());
 
     QCOMPARE(FromJSValue::constructorCalls, 1);
