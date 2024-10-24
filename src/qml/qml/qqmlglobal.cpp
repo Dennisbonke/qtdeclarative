@@ -117,9 +117,7 @@ static bool fromMatchingType(
             continue;
 
         if (retrieve([&](QMetaType sourceMetaType, void *sourceData) {
-            void *argv[] = {nullptr, sourceData};
-            QMetaType types[] = {QMetaType(), sourceMetaType};
-            if (!QV4::QObjectMethod::isExactMatch(ctor, argv, 1, types))
+            if (sourceMetaType != ctor.parameterMetaType(0))
                 return false;
             callConstructor(targetMetaObject, i, sourceData, allocate());
             return true;
