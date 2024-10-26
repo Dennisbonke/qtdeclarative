@@ -302,6 +302,10 @@ void tst_accessibility::actionAccessibility()
     QVERIFY(iface);
     QCOMPARE(iface->text(QAccessible::Name), "Peach");
     QCOMPARE(iface->text(QAccessible::Description), description);
+
+    QVERIFY(iface->actionInterface()->actionNames().contains(QAccessibleActionInterface::pressAction()));
+    iface->actionInterface()->doAction(QAccessibleActionInterface::pressAction());
+    QCOMPARE(item->property("pressCount").toInt(), 1);
 #endif
 }
 
