@@ -117,9 +117,23 @@ void QQuickPopupWindow::resizeEvent(QResizeEvent *e)
         return;
 
     qCDebug(lcPopupWindow) << "A window system event changed the popup's size to be " << e->size();
-    const QMarginsF windowInsets = QQuickPopupPrivate::get(d->m_popup)->windowInsets();
+    QQuickPopupPrivate *popupPrivate = QQuickPopupPrivate::get(d->m_popup);
+
+    const auto topLeftFromSystem = global2Local(d->geometry.topLeft());
+    // We need to use the current topLeft position here, so that reposition()
+    // does not move the window
+    const auto oldX = popupPrivate->x;
+    const auto oldY = popupPrivate->y;
+    popupPrivate->x = topLeftFromSystem.x();
+    popupPrivate->y = topLeftFromSystem.y();
+
+    const QMarginsF windowInsets = popupPrivate->windowInsets();
     d->m_popupItem->setWidth(e->size().width() - windowInsets.left() - windowInsets.right());
     d->m_popupItem->setHeight(e->size().height() - windowInsets.top() - windowInsets.bottom());
+
+    // and restore the actual x and y afterwards
+    popupPrivate->x = oldX;
+    popupPrivate->y = oldY;
 }
 
 void QQuickPopupWindowPrivate::setVisible(bool visible)
