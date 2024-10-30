@@ -3937,6 +3937,26 @@ private slots:
         QVERIFY(lambda);
         QCOMPARE(lambda.internalKind(), DomType::ScriptFunctionExpression);
     }
+    void doNotCrashOnNestedFunction()
+    {
+        using namespace Qt::StringLiterals;
+        const QString testFile = baseDir + u"/lambdas.qml"_s;
+        const DomItem fileObject = rootQmlObjectFromFile(testFile, qmltypeDirs).fileObject();
+        const DomItem lambda = fileObject.field(Fields::components)
+                .key(QString())
+                .index(0)
+                .field(Fields::objects)
+                .index(0)
+                .field(Fields::bindings)
+                .key("Component.onCompleted")
+                .index(0)
+                .field(Fields::value)
+                .field(Fields::scriptElement)
+                .field(Fields::statements)
+                .index(0);
+        QVERIFY(lambda);
+        QCOMPARE(lambda.internalKind(), DomType::ScriptFunctionExpression);
+    }
 
     void regexpLiteral()
     {
