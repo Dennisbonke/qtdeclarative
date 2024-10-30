@@ -332,6 +332,10 @@ function(qt6_add_qml_module target)
         )
     endif()
 
+    if(QT_QML_NO_CACHEGEN)
+        set(arg_NO_CACHEGEN TRUE)
+    endif()
+
     # Other arguments and checking for invalid combinations
     if (NOT arg_TARGET_PATH)
         # NOTE: This will always be used for copying things to the build
@@ -2758,7 +2762,7 @@ function(qt6_target_qml_sources target)
     if(arg_NO_LINT)
         set(no_lint TRUE)
     endif()
-    if(arg_NO_CACHEGEN)
+    if(arg_NO_CACHEGEN OR QT_QML_NO_CACHEGEN)
         set(no_cachegen TRUE)
     endif()
     if(no_qmldir MATCHES "NOTFOUND" OR arg_NO_QMLDIR_TYPES)
