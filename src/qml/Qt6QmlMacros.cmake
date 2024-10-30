@@ -1094,6 +1094,8 @@ endfunction()
 function(_qt_internal_deferred_aotstats_setup)
     get_property(module_targets GLOBAL PROPERTY _qt_qml_aotstats_module_targets)
 
+    set(onlybytecode_modules "")
+    set(empty_modules "")
     set(module_aotstats_targets "")
     set(module_aotstats_files "")
 
@@ -1103,6 +1105,14 @@ function(_qt_internal_deferred_aotstats_setup)
         get_target_property(uri                 ${module_target} QT_QML_MODULE_URI)
         get_target_property(aotstats_files      ${module_target} QT_QML_MODULE_AOTSTATS_FILES)
         get_target_property(rcc_qmlcache_path   ${module_target} QT_QML_MODULE_RCC_QMLCACHE_PATH)
+
+        if("--only-bytecode" IN_LIST qmlcachegen_args)
+            list(APPEND onlybytecode_modules "${uri}(${module_target})")
+            continue()
+        elseif(NOT aotstats_files)
+            list(APPEND empty_modules "${uri}(${module_target})")
+            continue()
+        endif()
 
         list(JOIN aotstats_files "\n" aotstats_files_lines)
         set(module_aotstats_list_file "${rcc_qmlcache_path}/module_${module_target}.aotstatslist")
@@ -1136,12 +1146,28 @@ function(_qt_internal_deferred_aotstats_setup)
     endforeach()
 
 
+    set(project_rcc_qmlcache "${PROJECT_BINARY_DIR}/.rcc/qmlcache")
+
+    set(qmlaotstats_options "")
+    if(onlybytecode_modules)
+        set(onlybytecode_modules_file "${project_rcc_qmlcache}/aotstats_onlybytecode_modules.txt")
+        list(JOIN onlybytecode_modules "\n" onlybytecode_modules_lines)
+        file(WRITE ${onlybytecode_modules_file} "${onlybytecode_modules_lines}")
+        list(APPEND qmlaotstats_options "--only-bytecode-modules" "${onlybytecode_modules_file}")
+    endif()
+    if(empty_modules)
+        set(empty_modules_file "${project_rcc_qmlcache}/aotstats_empty_modules.txt")
+        list(JOIN empty_modules "\n" empty_modules_lines)
+        file(WRITE ${empty_modules_file} "${empty_modules_lines}")
+        list(APPEND qmlaotstats_options "--empty-modules" "${empty_modules_file}")
+    endif()
+
     list(JOIN module_aotstats_files "\n" module_aotstats_lines)
-    set(aotstats_list_file "${PROJECT_BINARY_DIR}/.rcc/qmlcache/all_aotstats.aotstatslist")
+    set(aotstats_list_file "${project_rcc_qmlcache}/all_aotstats.aotstatslist")
     file(WRITE "${aotstats_list_file}" "${module_aotstats_lines}")
 
-    set(all_aotstats_file "${PROJECT_BINARY_DIR}/.rcc/qmlcache/all_aotstats.aotstats")
-    set(formatted_stats_file "${PROJECT_BINARY_DIR}/.rcc/qmlcache/all_aotstats.txt")
+    set(all_aotstats_file "${project_rcc_qmlcache}/all_aotstats.aotstats")
+    set(formatted_stats_file "${project_rcc_qmlcache}/all_aotstats.txt")
 
     _qt_internal_get_tool_wrapper_script_path(tool_wrapper)
     add_custom_command(
@@ -1161,6 +1187,8 @@ function(_qt_internal_deferred_aotstats_setup)
             format
             "${all_aotstats_file}"
             "${formatted_stats_file}"
+            "${qmlaotstats_options}"
+        COMMAND_EXPAND_LISTS
     )
 
     if(NOT TARGET all_aotstats)
@@ -2725,6 +2753,10 @@ function(qt6_target_qml_sources target)
         message(FATAL_ERROR "Unknown/unexpected arguments: ${arg_UNPARSED_ARGUMENTS}")
     endif()
 
+    if(NOT arg_QML_FILES)
+        set_property(GLOBAL APPEND PROPERTY _qt_qml_aotstats_module_targets ${target})
+    endif()
+
     get_target_property(no_lint ${target} QT_QML_MODULE_NO_LINT)
     if(NOT arg_QML_FILES AND NOT arg_RESOURCES)
         if(NOT arg_NO_LINT AND NOT no_lint)
@@ -2848,8 +2880,10 @@ function(qt6_target_qml_sources target)
             "$<${have_direct_calls}:--direct-calls>"
             "$<${have_arguments}:${arguments}>"
             ${qrc_resource_args}
-            "--dump-aot-stats"
-            "--module-id=${arg_URI}(${target})"
+            # The --only-bytecode argument is mutually exclusive with aotstats and can
+            # be added after qt_add_qml_module. Conditionally add aotstats flags via genex.
+            "$<$<NOT:$<IN_LIST:--only-bytecode,${arguments}>>:--dump-aot-stats>"
+            "$<$<NOT:$<IN_LIST:--only-bytecode,${arguments}>>:--module-id=${uri}(${target})>"
         )
 
         # For direct evaluation in if() below

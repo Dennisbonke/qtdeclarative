@@ -33,10 +33,10 @@ void AotStats::insert(AotStats other)
     }
 }
 
-std::optional<QList<QString>> extractAotstatsFilesList(const QString &aotstatsListPath)
+std::optional<QList<QString>> AotStats::readAllLines(const QString &path)
 {
-    QFile aotstatsListFile(aotstatsListPath);
-    if (!aotstatsListFile.open(QIODevice::ReadOnly | QIODevice::ReadOnly | QIODevice::Text)) {
+    QFile aotstatsListFile(path);
+    if (!aotstatsListFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug().noquote() << u"Could not open \"%1\" for reading"_s.arg(aotstatsListFile.fileName());
         return std::nullopt;
     }
@@ -62,7 +62,7 @@ std::optional<AotStats> AotStats::parseAotstatsFile(const QString &aotstatsPath)
 
 std::optional<AotStats> AotStats::aggregateAotstatsList(const QString &aotstatsListPath)
 {
-    const auto aotstatsFiles = extractAotstatsFilesList(aotstatsListPath);
+    const auto aotstatsFiles = readAllLines(aotstatsListPath);
     if (!aotstatsFiles.has_value())
         return std::nullopt;
 

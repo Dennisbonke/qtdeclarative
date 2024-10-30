@@ -11,7 +11,9 @@ namespace QQmlJS {
 
 using namespace Qt::StringLiterals;
 
-AotStatsReporter::AotStatsReporter(const AotStats &aotstats) : m_aotstats(aotstats)
+AotStatsReporter::AotStatsReporter(const AotStats &aotstats, const QStringList &emptyModules,
+                                   const QStringList &onlyBytecodeModules)
+    : m_aotstats(aotstats), m_emptyModules(emptyModules), m_onlyBytecodeModules(onlyBytecodeModules)
 {
     for (const auto &[moduleUri, fileEntries] : aotstats.entries().asKeyValueRange()) {
         for (const auto &[filepath, statsEntries] : fileEntries.asKeyValueRange()) {
@@ -68,7 +70,7 @@ void AotStatsReporter::formatDetailedStats(QTextStream &s) const
 void AotStatsReporter::formatSummary(QTextStream &s) const
 {
     s << "############ AOT COMPILATION STATS SUMMARY ############\n";
-    if (m_totalCounters.codegens == 0) {
+    if (m_totalCounters.codegens == 0 && m_emptyModules.empty() && m_onlyBytecodeModules.empty()) {
         s << "No attempted compilations to Cpp for bindings or functions.\n";
         return;
     }
@@ -78,6 +80,12 @@ void AotStatsReporter::formatSummary(QTextStream &s) const
         s << u"Module %1: "_s.arg(moduleUri)
           << formatSuccessRate(counters.codegens, counters.successes) << "\n";
     }
+
+    for (const auto &module : m_emptyModules)
+        s << u"Module %1: No .qml files to compile.\n"_s.arg(module);
+
+    for (const auto &module : m_onlyBytecodeModules)
+        s << u"Module %1: No .qml files compiled (--only-bytecode).\n"_s.arg(module);
 
     s << "Total results: " << formatSuccessRate(m_totalCounters.codegens, m_totalCounters.successes);
     s << "\n";

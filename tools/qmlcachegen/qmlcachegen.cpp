@@ -241,6 +241,11 @@ int main(int argc, char **argv)
                 error.augment("Error compiling qml file: "_L1).print();
                 return EXIT_FAILURE;
             }
+
+            if (parser.isSet(onlyBytecode)) {
+                QQmlJS::AotStats emptyStats;
+                emptyStats.saveToDisk(outputFileName + u".aotstats"_s);
+            }
         } else {
             QStringList importPaths;
 

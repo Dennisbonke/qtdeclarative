@@ -53,6 +53,7 @@ public:
     void addEntry(const QString &moduleId, const QString &filepath, AotStatsEntry entry);
     void insert(AotStats other);
 
+    static std::optional<QStringList> readAllLines(const QString &path);
     bool saveToDisk(const QString &filepath) const;
 
     static std::optional<AotStats> parseAotstatsFile(const QString &aotstatsPath);
