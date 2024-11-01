@@ -274,8 +274,8 @@ public:
     bool isRootObjectInCreation() const { return m_isRootObjectInCreation; }
     void setRootObjectInCreation(bool rootInCreation) { m_isRootObjectInCreation = rootInCreation; }
 
-    QV4::PersistentValue importedScripts() const { return m_importedScripts; }
-    void setImportedScripts(const QV4::PersistentValue &scripts) { m_importedScripts = scripts; }
+    QV4::Value importedScripts() const { return m_importedScripts.value(); }
+    void setImportedScripts(QV4::ExecutionEngine *engine, QV4::Value scripts) { m_importedScripts.set(engine, scripts); }
 
     QQmlRefPointer<QQmlContextData> linkedContext() const { return m_linkedContext; }
     void setLinkedContext(const QQmlRefPointer<QQmlContextData> &context) { m_linkedContext = context; }

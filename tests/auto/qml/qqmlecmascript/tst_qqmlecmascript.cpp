@@ -4755,7 +4755,7 @@ void tst_qqmlecmascript::verifyContextLifetime(const QQmlRefPointer<QQmlContextD
     if (!ctxt->importedScripts().isNullOrUndefined()) {
         QV4::ExecutionEngine *v4 = ctxt->engine()->handle();
         QV4::Scope scope(v4);
-        QV4::ScopedArrayObject scripts(scope, ctxt->importedScripts().value());
+        QV4::ScopedArrayObject scripts(scope, ctxt->importedScripts());
         QV4::Scoped<QV4::QQmlContextWrapper> qml(scope);
         for (quint32 i = 0; i < scripts->getLength(); ++i) {
             QQmlRefPointer<QQmlContextData> scriptContext, newContext;
