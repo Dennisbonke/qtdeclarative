@@ -206,6 +206,7 @@ private slots:
     void cursorRectangle_QTBUG_38947();
     void textCached_QTBUG_41583();
     void doubleSelect_QTBUG_38704();
+    void textChanged_QTBUG_130676();
 
     void padding();
     void paddingAndWrap();
@@ -6216,6 +6217,15 @@ void tst_qquicktextedit::doubleSelect_QTBUG_38704()
     QCOMPARE(selectionSpy.size(), 2);
     textEdit->select(1,2); //Change selection start
     QCOMPARE(selectionSpy.size(), 3);
+}
+
+void tst_qquicktextedit::textChanged_QTBUG_130676()
+{
+    QQuickTextEdit textEdit;
+    QSignalSpy spy(&textEdit, SIGNAL(textChanged()));
+    QVERIFY(spy.isValid());
+    textEdit.setText("Hello Qt");
+    QVERIFY(spy.count() == 1);
 }
 
 void tst_qquicktextedit::padding()
