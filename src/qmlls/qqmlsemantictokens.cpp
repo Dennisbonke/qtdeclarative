@@ -614,7 +614,6 @@ void HighlightingVisitor::highlightBySemanticAnalysis(const DomItem &item, QQmlJ
                 << QString::fromLatin1("Semantic token for %1 has not been implemented yet")
                             .arg(int(expression->type));
     }
-    Q_UNREACHABLE_RETURN();
 }
 
 void HighlightingVisitor::highlightScriptExpressions(const DomItem &item)
