@@ -140,6 +140,8 @@ set(qml_sources
     requiredProperties.qml
 
     hpp.qml
+
+    attachedComponentProperty.qml
 )
 
 set(js_sources

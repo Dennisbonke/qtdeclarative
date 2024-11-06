@@ -107,4 +107,6 @@ private slots:
     void signalConnections();
 
     void hpp();
+
+    void attachedComponentProperty();
 };
