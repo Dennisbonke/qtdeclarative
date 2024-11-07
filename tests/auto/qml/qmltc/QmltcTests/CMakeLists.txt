@@ -142,6 +142,7 @@ set(qml_sources
     hpp.qml
 
     attachedComponentProperty.qml
+    attachedNamespacedProperty.qml
 )
 
 set(js_sources

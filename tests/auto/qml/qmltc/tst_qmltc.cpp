@@ -95,6 +95,7 @@
 #include "hpp.h"
 
 #include "attachedcomponentproperty.h"
+#include "attachednamespacedproperty.h"
 
 // Qt:
 #include <QtCore/qstring.h>
@@ -3407,12 +3408,10 @@ void tst_qmltc::hpp()
     QCOMPARE(createdByQmltc.objectName(), QLatin1String("hpp"));
 }
 
-void tst_qmltc::attachedComponentProperty()
+template<typename T>
+void checkOverlayAttached(T *createdByQmltc)
 {
-    QQmlEngine e;
-    PREPEND_NAMESPACE(attachedComponentProperty) createdByQmltc(&e);
-
-    QObject *attached = qmlAttachedPropertiesObject<QQuickOverlay>(&createdByQmltc);
+    QObject *attached = qmlAttachedPropertiesObject<QQuickOverlay>(createdByQmltc);
     QVERIFY(attached);
     QQuickOverlayAttached *overlay = qobject_cast<QQuickOverlayAttached *>(attached);
     QVERIFY(overlay);
@@ -3429,6 +3428,13 @@ void tst_qmltc::attachedComponentProperty()
     QVERIFY(rectangle);
 
     QCOMPARE(rectangle->color(), QColor::fromString("grey"_L1));
+}
+
+void tst_qmltc::attachedComponentProperty()
+{
+    QQmlEngine e;
+    PREPEND_NAMESPACE(attachedComponentProperty) createdByQmltc(&e);
+    checkOverlayAttached(&createdByQmltc);
 
     QQmlComponent *b = createdByQmltc.b();
     QVERIFY(b);
@@ -3437,6 +3443,13 @@ void tst_qmltc::attachedComponentProperty()
     QQuickRectangle *bRectangle = qobject_cast<QQuickRectangle *>(bInstance.data());
     QVERIFY(bRectangle);
     QCOMPARE(bRectangle->color(), QColor::fromString("green"_L1));
+}
+
+void tst_qmltc::attachedNamespacedProperty()
+{
+    QQmlEngine e;
+    PREPEND_NAMESPACE(attachedNamespacedProperty) createdByQmltc(&e);
+    checkOverlayAttached(&createdByQmltc);
 }
 
 QTEST_MAIN(tst_qmltc)

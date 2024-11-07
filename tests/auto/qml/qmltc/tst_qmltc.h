@@ -109,4 +109,5 @@ private slots:
     void hpp();
 
     void attachedComponentProperty();
+    void attachedNamespacedProperty();
 };
